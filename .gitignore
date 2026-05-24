@@ -63,6 +63,9 @@ hf_cache/
 report/*.pdf
 !report/.gitkeep
 
+# Material de cátedra (papers, enunciado) — uso local, no se publica
+docs/
+
 # Logs
 *.log
 logs/
