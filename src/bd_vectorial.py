@@ -44,12 +44,12 @@ collection = chroma_client.create_collection(name=nombre_coleccion)
 ids = [str(i) for i in range(len(corpus))]
 
 # Batches y embeddings
-batch_size = 5000
+batch_size = 5000 # batches de 5000 elementos pero se puede cambiar
 for i in range(0, len(corpus), batch_size):
     batch_docs = corpus[i:i + batch_size]
     batch_ids = ids[i:i + batch_size]
     
-    collection.add(
+    collection.add( #al hacer esto, chromaDB forma los embeddings con el modelo all-MiniLM-L6-v2
         documents=batch_docs,
         ids=batch_ids
     )
