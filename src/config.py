@@ -37,10 +37,14 @@ N_SAMPLES: int = 500
 # Modelos
 # ---------------------------------------------------------------------------
 # Variante de Gemma 4. Cambiar a 4b o superior si el hardware lo permite.
-LLM_MODEL: str = "google/gemma-4-2b-it"
+LLM_MODEL: str = "google/gemma-4-E2B-it"
 
-# Modelo de embeddings (sentence-transformers)
+# Modelo de embeddings base (sentence-transformers)
 EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
+
+# Modelo de embeddings mejorado (mejora 1)
+EMBEDDING_MODEL_BGE: str = "BAAI/bge-large-en-v1.5"
+VECTOR_STORE_DIR_BGE: Path = DATA_DIR / "faiss_index_bge"
 
 # ---------------------------------------------------------------------------
 # Generación
@@ -62,5 +66,5 @@ AGENT_MAX_STEPS: int = 7
 
 def ensure_dirs() -> None:
     """Crea las carpetas de trabajo si no existen."""
-    for d in (DATA_DIR, RESULTS_DIR, REPORT_DIR, VECTOR_STORE_DIR):
+    for d in (DATA_DIR, RESULTS_DIR, REPORT_DIR, VECTOR_STORE_DIR, VECTOR_STORE_DIR_BGE):
         d.mkdir(parents=True, exist_ok=True)

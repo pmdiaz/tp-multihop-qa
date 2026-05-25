@@ -19,9 +19,11 @@ Los resultados se reportan en términos de **Exact Match (EM)** y **F1** con la 
 
 | Item | Decisión |
 |---|---|
-| LLM | **Gemma 4** (local, vía `transformers`) |
-| Embeddings | `sentence-transformers/all-MiniLM-L6-v2` (a confirmar en Fase 2) |
+| LLM | **Gemma 4 E2B-it** (`google/gemma-4-E2B-it`, ~5B params MoE, local vía `transformers`) |
+| Embeddings base | `sentence-transformers/all-MiniLM-L6-v2` |
+| Embeddings mejorado | `BAAI/bge-large-en-v1.5` (MTEB 63.6 vs 56.3) |
 | Vector store | **FAISS** vía LangChain |
+| Retrieval mejorado | Híbrido BM25+FAISS (`EnsembleRetriever`, 60/40) + multi-query |
 | Tool del agente | **Base de datos vectorial** (no Wikipedia) |
 | Subset de evaluación | **500 preguntas** del split `validation`, estratificadas por `type` y `level`, semilla fija |
 | Config del dataset | `distractor` |
@@ -142,6 +144,75 @@ Revisión de reproducibilidad (semillas, `requirements.txt`, instrucciones de us
 | 6–7 jun | Fase 6–7 | CSV consolidado + análisis |
 | 8–9 jun | Fase 8 | Informe en draft |
 | 10 jun | Fase 9 | Entrega final |
+
+## Resultados parciales
+
+> Resultados obtenidos al 25 de mayo 2026 sobre el subset de 500 preguntas.
+
+### Tabla comparativa
+
+| Sistema | EM | F1 | EM bridge | EM comparison |
+|---|---|---|---|---|
+| Baseline closed-book | 13.8 % | 20.6 % | 5.2 % | 48.0 % |
+| RAG k=3 | 33.4 % | 43.6 % | 28.5 % | 53.0 % |
+| RAG k=5 | 35.8 % | 47.6 % | 29.8 % | 60.0 % |
+| RAG k=10 | 37.2 % | 48.8 % | 31.8 % | 59.0 % |
+| Agente ReAct | **39.2 %** | **52.5 %** | **32.8 %** | **65.0 %** |
+
+El agente mejora consistentemente sobre el RAG (+2–5 EM), con la ganancia principal en preguntas de comparación donde la búsqueda iterativa permite contrastar entidades. El closed-book ya resuelve comparaciones simples (EM=48 %) pero falla casi totalmente en bridge (EM=5.2 %).
+
+Métricas operativas del agente: finish rate 91.4 % (457/500), 3.3 pasos promedio, 1.9 llamadas search por pregunta.
+
+### Análisis de errores — Agente ReAct
+
+Se analizaron los **269 errores en preguntas bridge** (tipo más difícil, requiere encadenamiento de hechos):
+
+| Categoría | Casos | % |
+|---|---|---|
+| Error de extracción (respuesta en contexto pero modelo falla) | 173 | 64.3 % |
+| Corpus miss (respuesta no aparece en ningún fragmento recuperado) | 96 | 35.7 % |
+
+**Error de extracción (64.3 %)**: el agente recupera los artículos correctos pero no logra formular la respuesta final precisa. La causa es la capacidad limitada de razonamiento de Gemma 4 E2B con contextos largos, no un problema de retrieval.
+
+**Corpus miss (35.7 %)**: el retrieval no devuelve el artículo con la respuesta. Atacable con mejores embeddings o estrategias de búsqueda más robustas.
+
+### Análisis de Lookup — por qué no se implementa
+
+Se evaluó si una herramienta `lookup[term]` (búsqueda léxica sobre el último `search[]`) mejoraría los resultados. La herramienta opera completamente en memoria sobre los documentos ya recuperados y no consulta nuevamente el índice.
+
+**Conclusión**: el Lookup no resuelve ninguna de las dos categorías de error principales:
+- Los errores de extracción (64.3 %) son fallas del LLM, no de acceso a información.
+- Los corpus miss (35.7 %) requieren recuperar *nuevos* documentos del índice, algo que Lookup no hace.
+
+Adicionalmente, el truncamiento a 400 caracteres por documento en la Observation **nunca** cortó una respuesta gold (0 misses de truncamiento verificados). El Lookup agregaría complejidad sin impacto en las métricas.
+
+### Mejoras de retrieval implementadas
+
+Para atacar el 35.7 % de corpus miss se implementaron tres mejoras ortogonales:
+
+**1. Embeddings BGE-large** (`BAAI/bge-large-en-v1.5`, 335M params)  
+Score MTEB: 63.6 vs 56.3 del MiniLM base. Mejor representación semántica para queries complejas multi-hop. Índice guardado en `data/faiss_index_bge/`.
+
+**2. Retrieval híbrido BM25 + FAISS**  
+`EnsembleRetriever` de LangChain con pesos 60 % FAISS / 40 % BM25. BM25 complementa al embeddings en queries con nombres propios exactos donde la similitud semántica falla pero el match léxico es preciso.
+
+**3. Multi-query**  
+En cada llamada `search[]`, se une el resultado de la query del agente con el resultado de la pregunta original, deduplicando por título. Aumenta el recall sin costo adicional de LLM.
+
+Estas tres mejoras son combinables. El script `scripts/05b_agente_mejorado.py` permite activarlas individualmente:
+
+```bash
+# Solo BGE (mejora embeddings)
+python scripts/05b_agente_mejorado.py --embedding bge
+
+# BGE + híbrido BM25+FAISS
+python scripts/05b_agente_mejorado.py --embedding bge --hybrid
+
+# Todas las mejoras activas
+python scripts/05b_agente_mejorado.py --embedding bge --hybrid --multi-query
+```
+
+El nombre del archivo de salida refleja las mejoras activas (ej. `results/predictions_agent_bge_hybrid_mq.json`). Prerrequisito: construir el índice BGE con `python scripts/02b_construir_vector_store_bge.py`.
 
 ## Referencias
 

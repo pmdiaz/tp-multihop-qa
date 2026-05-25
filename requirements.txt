@@ -12,6 +12,7 @@ langchain-huggingface>=0.0.3
 
 # Vector store
 faiss-cpu>=1.8.0
+rank-bm25>=0.2.2
 
 # Utilidades
 numpy>=1.26.0
