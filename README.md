@@ -7,7 +7,7 @@ Autor: Pablo Díaz (`pmdiaz@gmail.com`).
 
 ## Resumen
 
-El objetivo del trabajo es replicar y comparar distintas técnicas para resolver la tarea de **Multi-hop Question Answering** sobre el dataset [HotpotQA](https://huggingface.co/datasets/hotpotqa/hotpot_qa). Se implementan y evalúan tres enfoques sobre el mismo subconjunto del set de validación:
+El objetivo del trabajo es replicar y comparar distintas técnicas para resolver la tarea de **Multi-hop Question Answering** sobre el dataset [HotpotQA](https://huggingface.co/datasets/nlp-udesa/hotpot_qa_3k) (subset curado por la cátedra). Se implementan y evalúan tres enfoques sobre el mismo subconjunto:
 
 1. **Baseline closed-book**: un LLM responde sin contexto externo.
 2. **RAG**: el LLM responde con los `top-k` contextos recuperados desde una base vectorial.
@@ -19,55 +19,78 @@ Los resultados se reportan en términos de **Exact Match (EM)** y **F1** con la 
 
 | Item | Decisión |
 |---|---|
-| LLM | **Gemma 4** (local, vía `transformers`) |
-| Embeddings | `sentence-transformers/all-MiniLM-L6-v2` (a confirmar en Fase 2) |
-| Vector store | **FAISS** vía LangChain |
+| Dataset | [`nlp-udesa/hotpot_qa_3k`](https://huggingface.co/datasets/nlp-udesa/hotpot_qa_3k) (subset curado por la cátedra) |
+| LLM | `gemini/gemini-3.1-flash-lite` vía **LiteLLM** |
+| Embeddings | `all-MiniLM-L6-v2` (default de ChromaDB) |
+| Vector store | **ChromaDB** persistente en `./chroma_db` |
 | Tool del agente | **Base de datos vectorial** (no Wikipedia) |
 | Subset de evaluación | **500 preguntas** del split `validation`, estratificadas por `type` y `level`, semilla fija |
-| Config del dataset | `distractor` |
+| Gestor de paquetes | **uv** |
 
 ## Estructura del proyecto
 
 ```
 tp-multihop-qa/
-├── README.md                  # Este archivo
-├── requirements.txt           # Dependencias Python
+├── README.md
+├── pyproject.toml             # Dependencias y entry points (uv)
+├── uv.lock
 ├── .gitignore
-├── src/                       # Código fuente reutilizable
-│   ├── config.py              # Constantes (semillas, paths, modelos)
-│   ├── data_utils.py          # Carga del dataset y subset estratificado
-│   ├── vector_store.py        # (Fase 2) Construcción del índice FAISS
-│   ├── llm.py                 # (Fase 3) Wrapper del LLM
-│   ├── rag.py                 # (Fase 4) Pipeline RAG
-│   ├── agent.py               # (Fase 5) Agente ReAct
-│   ├── prompts.py             # Templates de prompts
-│   └── evaluation.py          # (Fase 6) Métricas EM / F1 oficiales
-├── scripts/                   # Scripts ejecutables por fase
-│   └── 01_explorar_dataset.py
-├── notebooks/                 # Análisis exploratorios y reporting visual
-├── data/                      # Caché del dataset, subset, índice (gitignored)
-├── results/                   # Predicciones y métricas por sistema (gitignored)
-└── report/                    # Informe final (Markdown / PDF)
+├── src/
+│   ├── bd_vectorial.py        # Construye la base vectorial       →  uv run bd_vectorial
+│   ├── baseline_llm_sin_bd.py # LLM sin RAG (baseline)           →  uv run baseline
+│   ├── baseline_metricas.py   # EM / F1 del baseline             →  uv run metricas
+│   ├── answer_rag.py          # Pipeline RAG                     →  uv run rag
+│   ├── rag_metricas.py        # EM / F1 del RAG                  →  uv run rag_metricas
+│   └── hotpot_qa/             # Paquete de soporte
+│       ├── config.py          # Constantes globales
+│       └── data_utils.py      # Carga y subset estratificado
+├── notebooks/                 # Análisis exploratorios
+├── data/                      # Caché del dataset (gitignored)
+├── chroma_db/                 # Base de datos ChromaDB (gitignored)
+├── results/                   # Predicciones y métricas (gitignored)
+└── report/                    # Informe final
 ```
 
 ## Setup
 
+### 1. Instalar uv
+
 ```bash
-# 1. Crear entorno virtual
-python -m venv venv
-source venv/bin/activate
-
-# 2. Instalar dependencias
-pip install -r requirements.txt
-
-# 3. (Opcional) Pre-descargar el dataset y construir el subset
-python scripts/01_explorar_dataset.py
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-Para usar Gemma 4 desde Hugging Face hace falta aceptar la licencia en el hub y autenticarse:
+### 2. Instalar dependencias
 
 ```bash
-huggingface-cli login
+uv sync
+```
+
+### 3. Configurar la API key del LLM
+
+El proyecto usa Gemini a través de LiteLLM. Obtené tu clave en [Google AI Studio](https://ai.google.dev/gemini-api/docs/api-key):
+
+```bash
+export GEMINI_API_KEY="tu_api_key"
+```
+
+### 4. Construir la base vectorial
+
+```bash
+uv run bd_vectorial
+```
+
+Descarga `nlp-udesa/hotpot_qa_3k`, extrae todos los párrafos únicos y los indexa en ChromaDB (`./chroma_db`). Solo hace falta correrlo una vez.
+
+### 5. Correr los sistemas y calcular métricas
+
+```bash
+# Baseline: LLM sin contexto externo
+uv run baseline        # genera resultados_baseline.json
+uv run metricas        # calcula EM y F1 sobre resultados_baseline.json
+
+# RAG: recupera top-k párrafos antes de responder
+uv run rag             # genera resultados_rag.json
+uv run rag_metricas    # calcula EM y F1 sobre resultados_rag.json
 ```
 
 ## Plan de trabajo
@@ -84,32 +107,32 @@ Antes de tocar código, internalizar tres cosas de los papers de referencia:
 
 ### Fase 1 — Setup del entorno y exploración del dataset
 
-Cargar `hotpotqa/hotpot_qa` (config `distractor`) con la librería `datasets`. Inspeccionar los campos `question`, `answer`, `context`, `supporting_facts`, `type`, `level`. Construir un **subset reproducible de 500 preguntas** del split `validation`, estratificado por `type` y `level` con semilla fija. Persistir el subset como JSON para reutilizarlo en todas las fases.
+Cargar [`nlp-udesa/hotpot_qa_3k`](https://huggingface.co/datasets/nlp-udesa/hotpot_qa_3k) con la librería `datasets`. Inspeccionar los campos `question`, `answer`, `context`, `supporting_facts`, `type`, `level`. Construir un **subset reproducible de 500 preguntas** del split `validation`, estratificado por `type` y `level` con semilla fija. Persistir el subset como JSON para reutilizarlo en todas las fases.
 
-### Fase 2 — Construcción de la base de datos vectorial
+### Fase 2 — Ingesta en ChromaDB (`uv run ingest`)
 
-Extraer todos los contextos únicos (artículos = título + oraciones) del subset elegido. Embebebir con `sentence-transformers/all-MiniLM-L6-v2` e indexar con **FAISS** vía LangChain. Decisiones que documentar en el informe:
+Extraer todos los contextos únicos (artículos = título + oraciones) del subset. Generar embeddings con `jinaai/jina-embeddings-v5-text-nano` e indexar en **ChromaDB** (colección persistente en `./chroma`). Decisiones que documentar en el informe:
 
-- **Granularidad**: artículo completo (fiel a la consigna) vs. *chunking* por oración.
-- **Tamaño del corpus**: cantidad de documentos únicos resultantes.
+- **Granularidad**: artículo completo vs. *chunking* por oración.
+- **Tamaño del corpus**: cantidad de pasajes únicos resultantes.
 - **Validación cualitativa**: con queries de prueba, verificar que el retrieval recupera los párrafos esperados.
 
-### Fase 3 — Baseline: LLM sin RAG ni agentes (closed-book)
+### Fase 3 — Baseline closed-book (`uv run answer_direct`)
 
-Pipeline donde el LLM recibe **sólo la pregunta**. Sirve como piso del experimento para medir cuánto aporta el retrieval. Misma configuración de decoding (temperatura, max tokens) que los otros dos sistemas para que la comparación sea limpia.
+El LLM recibe **sólo la pregunta**, sin contexto externo. Sirve como piso del experimento. Se usa **LiteLLM** para unificar la llamada al modelo; la misma interfaz se reutiliza en RAG y agente, lo que facilita cambiar de modelo sin tocar lógica.
 
-### Fase 4 — Sistema RAG sobre la BD vectorial
+### Fase 4 — Sistema RAG (`uv run answer_rag`)
 
-Pipeline canónico: embebido de la pregunta → recuperar `top-k` → armar prompt con contextos → generar respuesta. Probar **k = 3, 5, 10** y reportar la curva. Implementación con `langchain.chains.RetrievalQA` o equivalente.
+Pipeline canónico: embebido de la pregunta → recuperar `top-k` desde ChromaDB → armar prompt con contextos → generar respuesta vía LiteLLM. Probar **k = 3, 5, 10** y reportar la curva.
 
-### Fase 5 — Agente estilo ReAct
+### Fase 5 — Agente ReAct (`uv run answer_agent`)
 
 Agente con ciclo `Thought → Action → Observation`. Herramientas mínimas:
 
-- `search(query)` → top-k del FAISS store.
+- `search(query)` → top-k desde ChromaDB.
 - `finish(answer)` → termina la ejecución.
 
-Parámetros: `max_steps = 5–7`, prompt few-shot con ejemplos al estilo ReAct, captura del *reasoning trace* para análisis cualitativo posterior.
+Parámetros: `max_steps = 5–7`, prompt few-shot con ejemplos al estilo ReAct, captura del *reasoning trace* para análisis cualitativo posterior. Las llamadas al LLM van también por LiteLLM.
 
 ### Fase 6 — Evaluación con métricas oficiales
 
@@ -142,6 +165,18 @@ Revisión de reproducibilidad (semillas, `requirements.txt`, instrucciones de us
 | 6–7 jun | Fase 6–7 | CSV consolidado + análisis |
 | 8–9 jun | Fase 8 | Informe en draft |
 | 10 jun | Fase 9 | Entrega final |
+
+## Dependencias principales
+
+| Librería | Rol |
+|---|---|
+| `chromadb` | Base de datos vectorial persistente |
+| `litellm` | Interfaz unificada para LLMs (Gemini, OpenAI, Anthropic, modelos locales, etc.) |
+| `transformers` | Modelo de embeddings `jinaai/jina-embeddings-v5-text-nano` |
+| `datasets` | Carga de `nlp-udesa/hotpot_qa_3k` |
+| `langchain` | Utilidades de cadenas y agentes |
+
+Gestionadas con **uv** (`pyproject.toml` + `uv.lock`). No se usa `requirements.txt`.
 
 ## Referencias
 

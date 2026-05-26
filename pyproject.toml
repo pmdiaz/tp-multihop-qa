@@ -1,0 +1,35 @@
+[project]
+name = "hotpot_qa"
+version = "0.1.0"
+description = "Multi-hop QA con RAG y Agentes sobre HotpotQA"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "chromadb>=1.0.0",
+    "datasets>=3.0.0",
+    "ipykernel>=6.29.0",
+    "ipywidgets>=8.1.0",
+    "jupyter>=1.1.0",
+    "langchain>=0.3.0",
+    "litellm>=1.60.0",
+    "peft>=0.10.0",
+    "tqdm>=4.66.0",
+    "transformers[torch]>=4.50.0",
+    "wikipedia>=1.4.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hotpot_qa"]
+
+[project.scripts]
+# Scripts del compañero
+bd_vectorial = "bd_vectorial:main"
+baseline     = "baseline_llm_sin_bd:main"
+metricas     = "baseline_metricas:main"
+# Scripts del usuario
+rag          = "answer_rag:main"
+rag_metricas = "rag_metricas:main"

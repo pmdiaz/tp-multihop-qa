@@ -46,7 +46,11 @@ data/*
 results/*
 !results/.gitkeep
 
-# Índices vectoriales
+# Base de datos vectorial ChromaDB
+chroma/
+chroma_db/
+
+# Índices vectoriales (legacy FAISS)
 *.faiss
 *.pkl
 *.index

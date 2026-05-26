@@ -1,4 +1,4 @@
-# pregunta al LLM sin usar la base de datos vectorial. 
+# pregunta al LLM sin usar la base de datos vectorial.
 # se guardan las respuestas a las preguntas en un JSON.
 
 # Para usar Gemma o LLMs de HF:
@@ -17,31 +17,39 @@ import time
 from datasets import load_dataset
 from litellm import completion
 
-# Carga del dataset reducido (validación) y muestra de 50 preguntas para el baseline (se pueden tomar mas)
-muestra = load_dataset("nlp-udesa/hotpot_qa_3k", split="validation").select(range(50))
 
-resultados_baseline = []
+def main():
+    # Carga del dataset reducido (validación) y muestra de 50 preguntas para el baseline (se pueden tomar mas)
+    muestra = load_dataset("nlp-udesa/hotpot_qa_3k", split="validation").select(range(50))
 
-# Iteración y consulta a Gemma a través de HF
-for fila in muestra:
-    response = completion(
-        model="gemini/gemini-3.1-flash-lite",
-        messages=[
-            {"role": "system", "content": "Answer briefly."},
-            {"role": "user", "content": fila['question']}
-        ]
-    )
-    
-    # Guardado de datos para métricas
-    resultados_baseline.append({
-        "id": fila['id'],
-        "pregunta": fila['question'],
-        "respuesta_real": fila['answer'],
-        "respuesta_modelo": response.choices[0].message.content.strip()
-    })
+    resultados_baseline = []
 
-    time.sleep(4.5) # esperar 4.5 segundos para no superar el límite de 15 requests per minute
+    # Iteración y consulta a Gemma a través de HF
+    for fila in muestra:
+        response = completion(
+            model="gemini/gemini-3.1-flash-lite",
+            messages=[
+                {"role": "system", "content": "Answer briefly."},
+                {"role": "user", "content": fila['question']}
+            ]
+        )
 
-# JSON en disco para calcular métricas)
-with open("resultados_baseline.json", "w", encoding="utf-8") as f:
-    json.dump(resultados_baseline, f, indent=4, ensure_ascii=False)
+        # Guardado de datos para métricas
+        resultados_baseline.append({
+            "id": fila['id'],
+            "pregunta": fila['question'],
+            "respuesta_real": fila['answer'],
+            "respuesta_modelo": response.choices[0].message.content.strip()
+        })
+
+        time.sleep(4.5) # esperar 4.5 segundos para no superar el límite de 15 requests per minute
+
+    # JSON en disco para calcular métricas)
+    with open("resultados_baseline.json", "w", encoding="utf-8") as f:
+        json.dump(resultados_baseline, f, indent=4, ensure_ascii=False)
+
+    print("Listo. Respuestas guardadas en resultados_baseline.json")
+
+
+if __name__ == "__main__":
+    main()

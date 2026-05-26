@@ -32,8 +32,8 @@ def f1_score(prediccion, real):
 
 
 def main():
-    # Cargar resultados LLM baselina (JSON)
-    with open("resultados_baseline.json", "r", encoding="utf-8") as f:
+    # Cargar resultados RAG (JSON)
+    with open("resultados_rag.json", "r", encoding="utf-8") as f:
         resultados = json.load(f)
 
     em_total = 0
