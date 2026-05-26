@@ -180,11 +180,18 @@ Se analizaron los **269 errores en preguntas bridge** (tipo más difícil, requi
 
 Se evaluó si una herramienta `lookup[term]` (búsqueda léxica sobre el último `search[]`) mejoraría los resultados. La herramienta opera completamente en memoria sobre los documentos ya recuperados y no consulta nuevamente el índice.
 
-**Conclusión**: el Lookup no resuelve ninguna de las dos categorías de error principales:
-- Los errores de extracción (64.3 %) son fallas del LLM, no de acceso a información.
-- Los corpus miss (35.7 %) requieren recuperar *nuevos* documentos del índice, algo que Lookup no hace.
+**Resultado empírico** (agente con Lookup habilitado, `results/predictions_agent.json`):
 
-Adicionalmente, el truncamiento a 400 caracteres por documento en la Observation **nunca** cortó una respuesta gold (0 misses de truncamiento verificados). El Lookup agregaría complejidad sin impacto en las métricas.
+| Métrica | Agente base | Agente + Lookup | Δ |
+|---|---|---|---|
+| EM | **39.2 %** | 38.4 % | −0.8 |
+| F1 | **52.5 %** | 49.8 % | −2.7 |
+| Finish rate | **91.4 %** | 87.8 % | −3.6 pp |
+| Pasos promedio | **3.3** | 3.6 | +0.3 |
+| Bridge EM | **32.8 %** | 32.8 % | 0 |
+| Comparison EM | **65.0 %** | 61.0 % | −4.0 |
+
+El Lookup no solo no mejora, sino que degrada levemente. El Bridge EM queda idéntico porque el 64.3 % de los errores son de extracción (el modelo tiene la información pero no la formula bien) y el 35.7 % son corpus miss (el Lookup no puede recuperar nuevos documentos). El Comparison EM cae porque el modelo gasta pasos en lookups innecesarios, reduciendo el finish rate. **Decisión: descartar el Lookup; priorizar mejoras de retrieval.**
 
 ### Mejoras de retrieval implementadas
 

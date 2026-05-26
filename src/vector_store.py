@@ -10,7 +10,7 @@ Funciones principales:
 - ``save_vector_store`` / ``load_vector_store``: persistencia en disco.
 - ``get_retriever``: devuelve un retriever FAISS listo para usar.
 - ``build_bm25_retriever``: retriever BM25 (keyword) sobre el mismo corpus.
-- ``build_hybrid_retriever``: EnsembleRetriever FAISS + BM25.
+- ``build_hybrid_retriever``: retriever híbrido FAISS + BM25 (RRF).
 """
 
 from __future__ import annotations
@@ -18,7 +18,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from langchain.retrievers import EnsembleRetriever
 from langchain_community.retrievers import BM25Retriever
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
@@ -108,21 +107,52 @@ def build_bm25_retriever(
     return retriever
 
 
+class _HybridRetriever:
+    """Combina FAISS (semántico) y BM25 (keyword) con Reciprocal Rank Fusion.
+
+    Implementación propia porque EnsembleRetriever fue removido en LangChain 1.x.
+    RRF: score(doc) = Σ weight_i / (rank_i + 60). Deduplicado por título.
+    """
+
+    def __init__(self, faiss_retriever: Any, bm25_retriever: BM25Retriever, k: int, bm25_weight: float):
+        self._faiss = faiss_retriever
+        self._bm25 = bm25_retriever
+        self._k = k
+        self._bm25_weight = bm25_weight
+        self._faiss_weight = 1.0 - bm25_weight
+
+    def invoke(self, query: str) -> list:
+        faiss_docs = self._faiss.invoke(query)
+        bm25_docs = self._bm25.invoke(query)
+
+        scores: dict[str, float] = {}
+        docs_by_title: dict[str, Any] = {}
+        rrf_k = 60
+
+        for rank, doc in enumerate(bm25_docs):
+            title = doc.metadata.get("title", id(doc))
+            scores[title] = scores.get(title, 0.0) + self._bm25_weight / (rank + rrf_k)
+            docs_by_title.setdefault(title, doc)
+
+        for rank, doc in enumerate(faiss_docs):
+            title = doc.metadata.get("title", id(doc))
+            scores[title] = scores.get(title, 0.0) + self._faiss_weight / (rank + rrf_k)
+            docs_by_title.setdefault(title, doc)
+
+        ranked = sorted(scores, key=scores.__getitem__, reverse=True)
+        return [docs_by_title[t] for t in ranked[: self._k]]
+
+
 def build_hybrid_retriever(
     vs: FAISS,
     subset: list[dict[str, Any]],
     k: int = config.DEFAULT_TOP_K,
     bm25_weight: float = 0.4,
-) -> EnsembleRetriever:
+) -> _HybridRetriever:
     """Combina FAISS (semántico) y BM25 (keyword) con pesos configurables.
 
     ``bm25_weight=0.4`` da 60% de peso a FAISS y 40% a BM25.
-    Ajustar si el dataset tiene muchos nombres propios (subir BM25)
-    o si las queries son más semánticas (bajar BM25).
     """
     faiss_retriever = get_retriever(vs, k=k)
     bm25_retriever = build_bm25_retriever(subset, k=k)
-    return EnsembleRetriever(
-        retrievers=[bm25_retriever, faiss_retriever],
-        weights=[bm25_weight, 1.0 - bm25_weight],
-    )
+    return _HybridRetriever(faiss_retriever, bm25_retriever, k=k, bm25_weight=bm25_weight)
