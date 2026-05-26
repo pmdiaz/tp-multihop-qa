@@ -109,30 +109,30 @@ Antes de tocar código, internalizar tres cosas de los papers de referencia:
 
 Cargar [`nlp-udesa/hotpot_qa_3k`](https://huggingface.co/datasets/nlp-udesa/hotpot_qa_3k) con la librería `datasets`. Inspeccionar los campos `question`, `answer`, `context`, `supporting_facts`, `type`, `level`. Construir un **subset reproducible de 500 preguntas** del split `validation`, estratificado por `type` y `level` con semilla fija. Persistir el subset como JSON para reutilizarlo en todas las fases.
 
-### Fase 2 — Ingesta en ChromaDB (`uv run ingest`)
+### Fase 2 — Construcción de la base vectorial (`uv run bd_vectorial`)
 
-Extraer todos los contextos únicos (artículos = título + oraciones) del subset. Generar embeddings con `jinaai/jina-embeddings-v5-text-nano` e indexar en **ChromaDB** (colección persistente en `./chroma`). Decisiones que documentar en el informe:
+Extraer todos los contextos únicos (título + oraciones) de todas las particiones del dataset e indexar en **ChromaDB** (`./chroma_db`). ChromaDB genera los embeddings automáticamente con `all-MiniLM-L6-v2`. Decisiones que documentar en el informe:
 
-- **Granularidad**: artículo completo vs. *chunking* por oración.
+- **Granularidad**: artículo completo (título + todas las oraciones concatenadas).
 - **Tamaño del corpus**: cantidad de pasajes únicos resultantes.
-- **Validación cualitativa**: con queries de prueba, verificar que el retrieval recupera los párrafos esperados.
+- **Validación cualitativa**: verificar con queries de prueba que el retrieval recupera los párrafos esperados.
 
-### Fase 3 — Baseline closed-book (`uv run answer_direct`)
+### Fase 3 — Baseline closed-book (`uv run baseline`)
 
-El LLM recibe **sólo la pregunta**, sin contexto externo. Sirve como piso del experimento. Se usa **LiteLLM** para unificar la llamada al modelo; la misma interfaz se reutiliza en RAG y agente, lo que facilita cambiar de modelo sin tocar lógica.
+El LLM recibe **sólo la pregunta**, sin contexto externo. Sirve como piso del experimento para medir cuánto aporta el retrieval. Las respuestas se guardan en `resultados_baseline.json`. Métricas con `uv run metricas`.
 
-### Fase 4 — Sistema RAG (`uv run answer_rag`)
+### Fase 4 — Sistema RAG (`uv run rag`)
 
-Pipeline canónico: embebido de la pregunta → recuperar `top-k` desde ChromaDB → armar prompt con contextos → generar respuesta vía LiteLLM. Probar **k = 3, 5, 10** y reportar la curva.
+Pipeline canónico: pregunta → recuperar `top-k` desde ChromaDB → armar prompt con contextos → generar respuesta vía LiteLLM. El valor de `TOP_K` se ajusta directamente en `src/answer_rag.py`. Las respuestas se guardan en `resultados_rag.json`. Métricas con `uv run rag_metricas`.
 
-### Fase 5 — Agente ReAct (`uv run answer_agent`)
+### Fase 5 — Agente ReAct
 
 Agente con ciclo `Thought → Action → Observation`. Herramientas mínimas:
 
 - `search(query)` → top-k desde ChromaDB.
 - `finish(answer)` → termina la ejecución.
 
-Parámetros: `max_steps = 5–7`, prompt few-shot con ejemplos al estilo ReAct, captura del *reasoning trace* para análisis cualitativo posterior. Las llamadas al LLM van también por LiteLLM.
+Parámetros: `max_steps = 5–7`, prompt few-shot con ejemplos al estilo ReAct, captura del *reasoning trace* para análisis cualitativo posterior.
 
 ### Fase 6 — Evaluación con métricas oficiales
 
@@ -151,14 +151,14 @@ Secciones: **Introducción** (½ pág) · **Metodología** (~1½ pág) · **Resu
 
 ### Fase 9 — Verificación final y entrega
 
-Revisión de reproducibilidad (semillas, `requirements.txt`, instrucciones de uso), validación de que las métricas del informe coincidan con los outputs del código, empaquetado y subida al campus virtual antes del **miércoles 10 de junio de 2026, 23:59 hs**.
+Revisión de reproducibilidad (semillas, `pyproject.toml`, instrucciones de uso), validación de que las métricas del informe coincidan con los outputs del código, empaquetado y subida al campus virtual antes del **miércoles 10 de junio de 2026, 23:59 hs**.
 
 ## Cronograma
 
 | Fechas | Fase | Entregable parcial |
 |---|---|---|
 | 22–25 may | Fase 0–1 | Subset de 500 preguntas persistido |
-| 26–28 may | Fase 2 | Índice FAISS construido y validado |
+| 26–28 may | Fase 2 | Base vectorial ChromaDB construida y validada |
 | 29–30 may | Fase 3 | Predicciones baseline + métricas |
 | 31 may – 2 jun | Fase 4 | Predicciones RAG con barrido de k |
 | 3–5 jun | Fase 5 | Predicciones del agente + traces |
@@ -170,9 +170,8 @@ Revisión de reproducibilidad (semillas, `requirements.txt`, instrucciones de us
 
 | Librería | Rol |
 |---|---|
-| `chromadb` | Base de datos vectorial persistente |
-| `litellm` | Interfaz unificada para LLMs (Gemini, OpenAI, Anthropic, modelos locales, etc.) |
-| `transformers` | Modelo de embeddings `jinaai/jina-embeddings-v5-text-nano` |
+| `chromadb` | Base de datos vectorial (embeddings automáticos con `all-MiniLM-L6-v2`) |
+| `litellm` | Interfaz unificada para LLMs (Gemini, OpenAI, Anthropic, etc.) |
 | `datasets` | Carga de `nlp-udesa/hotpot_qa_3k` |
 | `langchain` | Utilidades de cadenas y agentes |
 
