@@ -1,0 +1,302 @@
+[
+    {
+        "id": "5a89d48c554299515336132e",
+        "pregunta": "What Electoral Division in Victoria contained a suburb of Melbourne with a population of 25,147 at the 2016 Census?",
+        "respuesta_real": "The Division of Fawkner",
+        "respuesta_modelo": "The suburb is **Reservoir**, which had a population of 25,147 in the 2016 Census. It is located in the federal Electoral Division of **Cooper** (formerly Batman)."
+    },
+    {
+        "id": "5adea0c5554299728e26c776",
+        "pregunta": "Are both Helen Dunmore and M. P. Shiel of West Indian descent?",
+        "respuesta_real": "no",
+        "respuesta_modelo": "No. M. P. Shiel was born in Montserrat (West Indies), while Helen Dunmore was born in England and had no West Indian descent."
+    },
+    {
+        "id": "5abbe4c0554299642a094bc0",
+        "pregunta": "Rolls-Royce Welland's name is taken from this river that is low long",
+        "respuesta_real": "65 mi",
+        "respuesta_modelo": "The River Welland."
+    },
+    {
+        "id": "5abcf299554299700f9d7936",
+        "pregunta": "Are Tim Rice and Leslie Marmon Silko both lyricists?",
+        "respuesta_real": "no",
+        "respuesta_modelo": "No. Tim Rice is a world-renowned lyricist for musical theater. Leslie Marmon Silko is a novelist, poet, and essayist known for her fiction and literary prose, not for writing lyrics."
+    },
+    {
+        "id": "5adc0e395542996e685252c1",
+        "pregunta": "Dum Dum Motijheel College is located in the capital of West Bengal?",
+        "respuesta_real": "Kolkata",
+        "respuesta_modelo": "Yes, Dum Dum Motijheel College is located in Kolkata, which is the capital of West Bengal."
+    },
+    {
+        "id": "5a86481b5542996432c571b5",
+        "pregunta": "When was the publisher of Traveller Supplement 4: Citizens of the Imperium in business?",
+        "respuesta_real": "from 1973 to 1996",
+        "respuesta_modelo": "Game Designers' Workshop (GDW) was in business from **1973 to 1996**."
+    },
+    {
+        "id": "5ae077805542993d6555eb6e",
+        "pregunta": "Are Lance King and Han Seung-yeon both heavy metal vocalists?",
+        "respuesta_real": "no",
+        "respuesta_modelo": "No. Lance King is a heavy metal vocalist, but Han Seung-yeon is a South Korean singer and actress best known as a member of the K-pop girl group Kara."
+    },
+    {
+        "id": "5abe34095542993f32c2a088",
+        "pregunta": "How long did The Shire of Flinders, which encompassed the extremity of the Mornington Peninsula located south-east of Melbourne, Australia, exist?",
+        "respuesta_real": "1874 until 1994",
+        "respuesta_modelo": "The Shire of Flinders existed for **120 years**, from its incorporation in **1874** until it was abolished in **1994** to become part of the Shire of Mornington Peninsula."
+    },
+    {
+        "id": "5ade24e35542992fa25da6e6",
+        "pregunta": "Mamie Gummer played the role of Nancy Crozier on the TV series airing on what network?",
+        "respuesta_real": "CBS",
+        "respuesta_modelo": "Mamie Gummer played Nancy Crozier on **CBS** (in the series *The Good Wife*)."
+    },
+    {
+        "id": "5a7eb22655429930675135cb",
+        "pregunta": "Which current CBS NBA analyst played for the PORTLAND TRAILBLazers along with former UNLV teammate Stacey Augmon?",
+        "respuesta_real": "Greg Anthony",
+        "respuesta_modelo": "**Greg Anthony** played for the Portland Trail Blazers alongside his former UNLV teammate Stacey Augmon from 1997 to 1998."
+    },
+    {
+        "id": "5a8bd4d65542997f31a41dd8",
+        "pregunta": "Are both American Zeitgeist and Michael Jackson's This Is It documentary films about entertainment?",
+        "respuesta_real": "no",
+        "respuesta_modelo": "Yes, both are documentary films that focus on aspects of the entertainment industry. *Michael Jackson’s This Is It* documents concert production, while *American Zeitgeist* explores the cultural and psychological impacts of American entertainment and media."
+    },
+    {
+        "id": "5a9051615542995651fb5136",
+        "pregunta": "Shenley Hall is a house at a parish how far from central London?",
+        "respuesta_real": "18.7 miles",
+        "respuesta_modelo": "Shenley Hall is located in the parish of Shenley, Hertfordshire, approximately **15 to 20 miles** north of central London."
+    },
+    {
+        "id": "5ae3f2d25542995ad6573ccc",
+        "pregunta": "Firstar Center was the name for two buildings before the company changed its name to match which company based in Minneapolis?",
+        "respuesta_real": "U.S. Bancorp",
+        "respuesta_modelo": "Firstar Center was renamed to match **U.S. Bancorp** (U.S. Bank) after Firstar acquired the company in 2001 and adopted its name."
+    },
+    {
+        "id": "5addfe1c5542995b365fabaf",
+        "pregunta": "Are Wolfgang Becker and Jacques Audiard both German film directors?",
+        "respuesta_real": "no",
+        "respuesta_modelo": "No. Wolfgang Becker is German, but Jacques Audiard is French."
+    },
+    {
+        "id": "5a7ab51055429927d897bef6",
+        "pregunta": "What year was the author of Cock and Bull born? ",
+        "respuesta_real": "1961",
+        "respuesta_modelo": "Laurence Sterne was born in **1713**."
+    },
+    {
+        "id": "5a77a3905542992a6e59df40",
+        "pregunta": "The 1997–98 UCLA Bruins men's basketball team lost to what team in the sweet sixteen match?",
+        "respuesta_real": "The 1997–98 Kentucky Wildcats men's basketball team",
+        "respuesta_modelo": "The 1997–98 UCLA Bruins lost to the **Kentucky Wildcats** in the Sweet Sixteen."
+    },
+    {
+        "id": "5add1aa65542990d50227de1",
+        "pregunta": "Who was the director of the 2007 American fantasy comedy film in which the actor best known for playing Michael Scott on the the American version of \"The Office\" starred?",
+        "respuesta_real": "Tom Shadyac",
+        "respuesta_modelo": "The film is *Evan Almighty*, and it was directed by **Tom Shadyac**."
+    },
+    {
+        "id": "5ac4f42b55429924173fb50d",
+        "pregunta": "Which beverage is ignited prior to consumption, Flaming beverage or Blue Hawaii",
+        "respuesta_real": "Flaming beverages",
+        "respuesta_modelo": "A **flaming beverage** is ignited prior to consumption."
+    },
+    {
+        "id": "5ab7a86d5542995dae37e986",
+        "pregunta": "Which Skagen Painter favored naturalism along with Theodor Esbern Philipsen and Kristian Zahrtmann?",
+        "respuesta_real": "Peder Severin Krøyer",
+        "respuesta_modelo": "**Laurits Tuxen** is the Skagen painter most closely associated with the naturalistic movement alongside Philipsen and Zahrtmann."
+    },
+    {
+        "id": "5ae03cd855429924de1b7072",
+        "pregunta": "Were Paul Éluard and Georges Bataille from the same country?",
+        "respuesta_real": "yes",
+        "respuesta_modelo": "Yes, both Paul Éluard and Georges Bataille were French."
+    },
+    {
+        "id": "5a89fa2655429970aeb701d2",
+        "pregunta": "Are Stanley Elkin and Anne Tyler from the same country?",
+        "respuesta_real": "yes",
+        "respuesta_modelo": "Yes, both are American authors."
+    },
+    {
+        "id": "5ade79335542997c77adee38",
+        "pregunta": "The Ran Paul presidential campaign, 2016 event was held at a hotel on what river?",
+        "respuesta_real": "Ohio River",
+        "respuesta_modelo": "The 2016 Rand Paul campaign launch was held at the Galt House Hotel, which is located on the **Ohio River** in Louisville, Kentucky."
+    },
+    {
+        "id": "5a8c9fc2554299653c1aa0d4",
+        "pregunta": "Taylor McNamara played college football at USC a football program that is currently a member of what Conference",
+        "respuesta_real": "Big 12 Conference",
+        "respuesta_modelo": "Taylor McNamara played for USC, which is currently a member of the **Big Ten Conference**."
+    },
+    {
+        "id": "5abaccd1554299660624161b",
+        "pregunta": " Curious is a women's fragrance by a singer born in what city and state?",
+        "respuesta_real": "McComb, Mississippi",
+        "respuesta_modelo": "Curious is by Britney Spears, who was born in **McComb, Mississippi**."
+    },
+    {
+        "id": "5a85e2775542994775f60680",
+        "pregunta": "Just Before I Go stars an actress who plays what character in the series \"24\"?",
+        "respuesta_real": "Kim Bauer",
+        "respuesta_modelo": "The actress is **Elisha Cuthbert**, who played **Kim Bauer** in *24*."
+    },
+    {
+        "id": "5a712af15542994082a3e614",
+        "pregunta": "Which show that premiered in May 2011 is hosted by someone with the birth name Richard Kirschner?",
+        "respuesta_real": "My Cat from Hell",
+        "respuesta_modelo": "The show is **Judge Judy**'s spin-off, ***Judy Justice***, is not the one; the correct show is ***Judge Judy***'s successor, ***Hot Bench***, is also not it. The show you are looking for is ***Judge Judy***'s fellow program, **\"Judge Jerry,\"** hosted by **Jerry Springer** (born Gerald Norman Springer).\n\nHowever, the specific show you are referring to is **\"The Voice\"** (US), which premiered in April 2011, but if we look at **\"Judge Judy\"** alternatives, the host with the birth name **Richard Kirschner** is **Judge Joe Brown**, but he premiered earlier.\n\nActually, the host with the birth name **Richard Kirschner** is **Judge Joe Brown**; however, the show that premiered in May 2011 is **\"The Glee Project\"**, but that is incorrect. The host is **Judge Judy**'s colleague, **Judge Larry Seidlin**, but that is also not it.\n\nCorrection: The host is **Jerry Springer**, but the show you likely mean is **\"Judge Jerry\"**, which premiered later. The show premiering in May 2011 hosted by a man born Richard Kirschner is **\"Judge Judy\"** is incorrect.\n\nActually, the person is **Judge Joe Brown** (born 1947), but the show is **\"Judge Judy\"** (not him). The host is **Rick Sanchez**, but that is also wrong. \n\nThe correct answer is **\"The Voice\"** is incorrect. The show is **\"Judge Joe Brown\"** is incorrect. The person is **Judge Joe Brown**. \n\nWait—the host with the birth name **Richard Kirschner** is **Judge Joe Brown**. The show is **\"Judge Joe Brown\"**."
+    },
+    {
+        "id": "5ab57759554299637185c5a5",
+        "pregunta": "Princess Marie-Clementine Bagration was the illegitimate daughter of the Austrian Empire's Foreign Minister whose resignation was forced by what?",
+        "respuesta_real": "the liberal revolutions of 1848",
+        "respuesta_modelo": "Princess Marie-Clementine Bagration was the daughter of Prince Klemens von Metternich. His resignation in 1848 was forced by the **Revolutions of 1848**, which led to widespread uprisings across the Austrian Empire."
+    },
+    {
+        "id": "5ac3ba0455429939154138f2",
+        "pregunta": "Saturn AL-31 is an engine that powers the aircraft produced in what country?",
+        "respuesta_real": "China",
+        "respuesta_modelo": "The Saturn AL-31 powers aircraft produced in **Russia**."
+    },
+    {
+        "id": "5a8257fa55429940e5e1a866",
+        "pregunta": "The most famous song of the last monarch of Hawaii was what?",
+        "respuesta_real": "Aloha ʻOe",
+        "respuesta_modelo": "The most famous song by Queen Liliʻuokalani is **\"Aloha ʻOe.\"**"
+    },
+    {
+        "id": "5a8ba45b554299240d9c2051",
+        "pregunta": "Creation Entertainment is located in a city with what estimated 2014 population?",
+        "respuesta_real": "200,167",
+        "respuesta_modelo": "Creation Entertainment is located in Glendale, California, which had an estimated 2014 population of approximately **201,000**."
+    },
+    {
+        "id": "5ae234e85542994d89d5b395",
+        "pregunta": "Which  princess of French origin did Conrad IV of Germany married to ",
+        "respuesta_real": "Isabella II",
+        "respuesta_modelo": "Conrad IV of Germany married **Elisabeth of Bavaria**, who was not of French origin. \n\nIt is possible you are thinking of **Louis IX of France's sister, Isabella of France**, whom Conrad IV was at one point betrothed to, but they never married."
+    },
+    {
+        "id": "5ae1f4cb554299234fd0436d",
+        "pregunta": "What is the inhabitant of the city where  122nd SS-Standarte was formed in2014",
+        "respuesta_real": "276,170 inhabitants",
+        "respuesta_modelo": "The 122nd SS-Standarte was not formed in 2014; that unit was a historical Nazi paramilitary formation during World War II.\n\nIf you are referring to the **122nd Separate Territorial Defense Battalion** (a Ukrainian military unit formed in 2014), it was formed in **Odesa**. An inhabitant of Odesa is called an **Odesite** (or Odesit)."
+    },
+    {
+        "id": "5a75092b55429916b0164242",
+        "pregunta": "What third film in a franchise did Camile Delamarre edit?",
+        "respuesta_real": "Transporter 3",
+        "respuesta_modelo": "Camille Delamarre edited **Transporter 3**."
+    },
+    {
+        "id": "5abda2b755429933744ab80f",
+        "pregunta": "Hermann Wilhelm Göring was a veteran fighter pilot in a war that ended in what year?",
+        "respuesta_real": "1918",
+        "respuesta_modelo": "Hermann Göring was a fighter pilot in World War I, which ended in **1918**."
+    },
+    {
+        "id": "5ae52ba755429908b6326538",
+        "pregunta": "Which professional stock racing driver has won the Xfinity Series twice, and beat Kevin Harvick in the 2016 Bojangles' Southern 500?",
+        "respuesta_real": "Martin Truex Jr.",
+        "respuesta_modelo": "**Martin Truex Jr.** won the Xfinity Series championship twice (2004, 2005) and won the 2016 Bojangles' Southern 500."
+    },
+    {
+        "id": "5ade1eda55429975fa854e71",
+        "pregunta": "Are Alice Munro and Lillian Hellman both writers?",
+        "respuesta_real": "yes",
+        "respuesta_modelo": "Yes, both were writers. Alice Munro was a Canadian short story writer, and Lillian Hellman was an American playwright and screenwriter."
+    },
+    {
+        "id": "5a7280925542991f9a20c4a1",
+        "pregunta": "Pokémon: Arceus and the Jewel of Life and Totally Spies! The Movie both released in what year?",
+        "respuesta_real": "2009",
+        "respuesta_modelo": "Both were released in **2009**."
+    },
+    {
+        "id": "5a7eec6f55429934daa2fc7c",
+        "pregunta": "The Hindmarsh Stadium is sponsored by a brewery that sold how many liters of beer in 2013 ?",
+        "respuesta_real": "69.7 million litres",
+        "respuesta_modelo": "Hindmarsh Stadium is currently sponsored by **Coopers Brewery**. In their 2013 financial year, Coopers sold approximately **75.3 million liters** of beer."
+    },
+    {
+        "id": "5a71446b5542994082a3e72a",
+        "pregunta": "Who signed into law the act made to lower barriers to adoption?",
+        "respuesta_real": "President Bill Clinton",
+        "respuesta_modelo": "President **Bill Clinton** signed the **Adoption and Safe Families Act of 1997** into law."
+    },
+    {
+        "id": "5ae4183f5542996836b02c40",
+        "pregunta": "What was the goal as a photographer of the man whose \"Message from the Interior\" was published by Eakins Press?",
+        "respuesta_real": "to make pictures that are \"literate, authoritative, transcendent\"",
+        "respuesta_modelo": "The photographer, **Walker Evans**, aimed to create a \"poetic\" and \"lyrical\" exploration of American life by focusing on the hidden significance of ordinary, everyday objects and interiors, treating them as cultural artifacts that revealed the character of the nation."
+    },
+    {
+        "id": "5a8307c055429966c78a6af9",
+        "pregunta": "Dana White's Tuesday Night Contender Series premiers weekly on this subscription-based video streaming service owned by the Ultimate Fighting Championship",
+        "respuesta_real": "UFC Fight Pass",
+        "respuesta_modelo": "**UFC Fight Pass**"
+    },
+    {
+        "id": "5abf92c45542993fe9a41e07",
+        "pregunta": "Southern California Logistics Airport is how many miles northwest of Victorville, California?",
+        "respuesta_real": "8 miles",
+        "respuesta_modelo": "Southern California Logistics Airport is approximately **6 to 8 miles** northwest of Victorville, California."
+    },
+    {
+        "id": "5a8318dd55429940e5e1a95e",
+        "pregunta": "Who made the If/Then musical which has a theatrical score by a man who won the Tony Award and 2008 Outer Critics Circle Award?",
+        "respuesta_real": "Brian Yorkey",
+        "respuesta_modelo": "*If/Then* was composed by **Tom Kitt**, with book and lyrics by **Brian Yorkey**."
+    },
+    {
+        "id": "5ab8919655429934fafe6e13",
+        "pregunta": "Who used a Barrack buster to shoot down a British Army Lynx helicopter",
+        "respuesta_real": "IRA",
+        "respuesta_modelo": "The **Provisional Irish Republican Army (IRA)** used a \"barrack buster\" (a home-made mortar) to shoot down a British Army Lynx helicopter in **Crossmaglen, South Armagh, on March 19, 1994**."
+    },
+    {
+        "id": "5add22bc5542992ae4cec49f",
+        "pregunta": "Southrey is a village in the civil parish of which village in the West Lindsey district of Lincolnshire, England?",
+        "respuesta_real": "Bardney",
+        "respuesta_modelo": "Southrey is in the civil parish of **Bardney**."
+    },
+    {
+        "id": "5ab94cf0554299743d22eade",
+        "pregunta": "Naval Air Station Ellyson Field was an auxiliary facility to the air station in which community?",
+        "respuesta_real": "Warrington",
+        "respuesta_modelo": "Naval Air Station Ellyson Field was an auxiliary facility to **Naval Air Station Pensacola** in Florida."
+    },
+    {
+        "id": "5ae4988655429970de88d9c1",
+        "pregunta": "Which is a post-punk band, Boy Hits Car or The The?",
+        "respuesta_real": "The The",
+        "respuesta_modelo": "**The The** is considered a post-punk band. **Boy Hits Car** is a nu-metal/alternative metal band."
+    },
+    {
+        "id": "5a8483b45542992a431d1a40",
+        "pregunta": "What star of Two and a Half Men won two young artist and TV-land awards for his character?",
+        "respuesta_real": "Angus Turner Jones",
+        "respuesta_modelo": "**Angus T. Jones** won two Young Artist Awards for his role as Jake Harper. He did not win any TV Land Awards."
+    },
+    {
+        "id": "5a89bb0b5542992e4fca83a0",
+        "pregunta": "Who created the series broadcast on the WB that Leigh-Allyn Baker had a recurring role on?",
+        "respuesta_real": "Constance M. Burge",
+        "respuesta_modelo": "Leigh-Allyn Baker had a recurring role on *Charmed*, which was created by **Constance M. Burge**."
+    },
+    {
+        "id": "5adddf5d5542997dc7907078",
+        "pregunta": "Which sports station was the host of The Late Show, prior to Damien Fahey, an anchor for?",
+        "respuesta_real": "ESPN",
+        "respuesta_modelo": "Damien Fahey was a VJ for **MTV** before hosting *The Late Show* (specifically the *TRL* segments)."
+    }
+]

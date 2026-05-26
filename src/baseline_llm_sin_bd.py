@@ -13,6 +13,7 @@
 # 3 En Terminal: export GEMINI_API_KEY="api_key_aca"
 
 import json
+import time
 from datasets import load_dataset
 from litellm import completion
 
@@ -38,6 +39,8 @@ for fila in muestra:
         "respuesta_real": fila['answer'],
         "respuesta_modelo": response.choices[0].message.content.strip()
     })
+
+    time.sleep(4.5) # esperar 4.5 segundos para no superar el límite de 15 requests per minute
 
 # JSON en disco para calcular métricas)
 with open("resultados_baseline.json", "w", encoding="utf-8") as f:
