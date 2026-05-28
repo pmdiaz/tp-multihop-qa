@@ -13,6 +13,7 @@ dependencies = [
     "langchain>=0.3.0",
     "litellm>=1.60.0",
     "peft>=0.10.0",
+    "torch>=2.12.0",
     "tqdm>=4.66.0",
     "transformers[torch]>=4.50.0",
     "wikipedia>=1.4.0",
@@ -26,10 +27,8 @@ build-backend = "hatchling.build"
 packages = ["src/hotpot_qa"]
 
 [project.scripts]
-# Scripts del compañero
 bd_vectorial = "bd_vectorial:main"
 baseline     = "baseline_llm_sin_bd:main"
 metricas     = "baseline_metricas:main"
-# Scripts del usuario
 rag          = "answer_rag:main"
 rag_metricas = "rag_metricas:main"
