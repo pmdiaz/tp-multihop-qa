@@ -58,7 +58,7 @@ def main():
     ids = [str(i) for i in range(len(corpus))]
 
     # Batches y embeddings
-    batch_size = 500# batches de 500 elementos para evitar problemas de memoria, sino cuelga
+    batch_size = 32  # batches chicos para no saturar la memoria de MPS/GPU
     for i in range(0, len(corpus), batch_size):
         batch_docs = corpus[i:i + batch_size]
         batch_ids = ids[i:i + batch_size]

@@ -16,7 +16,7 @@ import json
 import time
 from datasets import load_dataset
 from litellm import completion
-
+from tqdm import tqdm
 
 def main():
     # carga del dataset reducido (validación) y muestra de 50 preguntas para el baseline (se pueden tomar mas pero a veces se supera la cuota)
@@ -24,26 +24,27 @@ def main():
 
     resultados_baseline = []
 
-    # iteración y consulta a gemini
-    for fila in muestra:
-        response = completion(
-            model="gemini/gemini-3.1-flash-lite",
-            messages=[
-                {"role": "system", "content": "Answer briefly."},
-                {"role": "user", "content": fila['question']}
-            ]
-        )
+    with tqdm(total=len(muestra), desc="Procesando preguntas") as pbar:
+        # iteración y consulta a gemini
+        for fila in muestra:
+            response = completion(
+                model="gemini/gemini-3.1-flash-lite",
+                messages=[
+                    {"role": "system", "content": "Answer briefly."},
+                    {"role": "user", "content": fila['question']}
+                ]
+            )
 
-        # Guardado de datos para métricas
-        resultados_baseline.append({
-            "id": fila['id'],
-            "pregunta": fila['question'],
-            "respuesta_real": fila['answer'],
-            "respuesta_modelo": response.choices[0].message.content.strip()
-        })
+            # Guardado de datos para métricas
+            resultados_baseline.append({
+                "id": fila['id'],
+                "pregunta": fila['question'],
+                "respuesta_real": fila['answer'],
+                "respuesta_modelo": response.choices[0].message.content.strip()
+            })
 
-        time.sleep(4.5) # esperar 4.5 segundos para no superar el límite de 15 requests per minute
-
+            time.sleep(4.5) # esperar 4.5 segundos para no superar el límite de 15 requests per minute
+            pbar.update(1)
     # JSON en disco para calcular métricas
     with open("resultados_baseline.json", "w", encoding="utf-8") as f:
         json.dump(resultados_baseline, f, indent=4, ensure_ascii=False)
