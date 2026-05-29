@@ -65,7 +65,7 @@ def main():
     agente = create_react_agent(llm, tools)
 
     # carga del dataset (validación) y muestra de 50 preguntas
-    muestra = load_dataset("nlp-udesa/hotpot_qa_3k", split="validation").select(range(50))
+    muestra = load_dataset("nlp-udesa/hotpot_qa_3k", split="validation").shuffle(seed=42).select(range(150))
     
     resultados_agente_db = []
     
