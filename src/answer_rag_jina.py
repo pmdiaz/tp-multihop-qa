@@ -1,3 +1,13 @@
+# Responde preguntas usando RAG (Retrieval-Augmented Generation).
+# Recupera los top-k párrafos más relevantes de la base vectorial
+# construida en bd_vectorial.py y los usa como contexto para el LLM.
+# Se guardan las respuestas en un JSON para calcular métricas luego.
+
+# Para usar Gemini:
+# 1 Entrar a https://aistudio.google.com/api-keys
+# 2 Create "API key" y copiar.
+# 3 En Terminal: export GEMINI_API_KEY="api_key_aca"
+
 import json
 import time
 import torch
