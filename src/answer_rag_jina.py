@@ -22,7 +22,7 @@ def main():
 
     # Carga del modelo jinaai para los embeddings igual que en la bd
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"Cargando modelo Jina en {device}...")
+    print(f"Cargando modelo jina en {device}...")
     model = AutoModel.from_pretrained(
         "jinaai/jina-embeddings-v5-text-nano",
         trust_remote_code=True,

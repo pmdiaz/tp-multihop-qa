@@ -19,12 +19,12 @@ from litellm import completion
 
 
 def main():
-    # Carga del dataset reducido (validación) y muestra de 50 preguntas para el baseline (se pueden tomar mas)
+    # carga del dataset reducido (validación) y muestra de 50 preguntas para el baseline (se pueden tomar mas pero a veces se supera la cuota)
     muestra = load_dataset("nlp-udesa/hotpot_qa_3k", split="validation").select(range(50))
 
     resultados_baseline = []
 
-    # Iteración y consulta a Gemma a través de HF
+    # iteración y consulta a gemini
     for fila in muestra:
         response = completion(
             model="gemini/gemini-3.1-flash-lite",
@@ -44,7 +44,7 @@ def main():
 
         time.sleep(4.5) # esperar 4.5 segundos para no superar el límite de 15 requests per minute
 
-    # JSON en disco para calcular métricas)
+    # JSON en disco para calcular métricas
     with open("resultados_baseline.json", "w", encoding="utf-8") as f:
         json.dump(resultados_baseline, f, indent=4, ensure_ascii=False)
 
