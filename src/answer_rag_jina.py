@@ -10,7 +10,7 @@ def main():
     # Carga del dataset (validación) y muestra de 50 preguntas
     muestra = load_dataset("nlp-udesa/hotpot_qa_3k", split="validation").select(range(50))
 
-    # Carga del modelo local Jina para vectorizar las preguntas igual que en la BD
+    # Carga del modelo jinaai para los embeddings igual que en la bd
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Cargando modelo Jina en {device}...")
     model = AutoModel.from_pretrained(
@@ -19,7 +19,7 @@ def main():
         dtype=torch.bfloat16,
     ).to(device=device)
 
-    # Conexión a la base vectorial
+    # Conexión a la bd
     chroma_client = chromadb.PersistentClient(path="./chroma_db")
     collection = chroma_client.get_collection(name="hotpotqa_corpus")
 
@@ -29,14 +29,14 @@ def main():
     resultados_rag = []
 
     for fila in muestra:
-        # Vectorizar la pregunta usando Jina con la task correspondiente
+        # Vectorizo la pregunta usando jinaai con la task correspondiente
         vector_query = model.encode(
             [fila['question']], 
             task="retrieval", 
             prompt_name="query"
         ).tolist()
 
-        # Recuperar los k párrafos más relevantes enviando los vectores, no el texto crudo
+        # recupero los k párrafos más relevantes enviando los embeddings
         resultados_busqueda = collection.query(
             query_embeddings=vector_query,
             n_results=TOP_K,
@@ -44,13 +44,13 @@ def main():
         )
         contextos = resultados_busqueda['documents'][0]
 
-        # Armar el prompt con los contextos recuperados
+        # se arma el prompt con los contextos recuperados para que conteste
         contexto_texto = "\n\n".join(
             f"[{i+1}] {ctx}" for i, ctx in enumerate(contextos)
         )
         prompt = (
-            f"Usá únicamente los siguientes párrafos para responder la pregunta. "
-            f"Dá solo la respuesta, sin explicaciones.\n\n"
+            f"Usá únicamente los siguientes párrafos para responder la pregunta. " #usa los contextos de la bd
+            f"Dá solo la respuesta, sin explicaciones.\n\n" #menos texto
             f"Contexto:\n{contexto_texto}\n\n"
             f"Pregunta: {fila['question']}\n"
             f"Respuesta:"
@@ -73,7 +73,7 @@ def main():
 
         time.sleep(4.5)  # esperar para no superar el límite de 15 requests per minute
 
-    # Guardar resultados en JSON para calcular métricas
+    # se guardan resultados en JSON para calcular métricas
     with open("resultados_rag.json", "w", encoding="utf-8") as f:
         json.dump(resultados_rag, f, indent=4, ensure_ascii=False)
 
