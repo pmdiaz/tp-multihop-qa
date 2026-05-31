@@ -74,11 +74,19 @@ def main():
             pregunta = fila['question']
             respuesta_real = fila['answer']
 
-            resultado = agente.invoke({"messages": [("system", system_prompt), ("user", pregunta)]})
-            prediccion = resultado["messages"][-1].content
+            try:
+                resultado = agente.invoke(
+                    {"messages": [("system", system_prompt), ("user", pregunta)]},
+                    config={"recursion_limit": 10}
+                )
+                prediccion = resultado["messages"][-1].content
+                mensajes = resultado["messages"]
+            except Exception:
+                prediccion = ""
+                mensajes = []
 
             queries = []
-            for msg in resultado["messages"]:
+            for msg in mensajes:
                 if hasattr(msg, "tool_calls") and msg.tool_calls:
                     for tc in msg.tool_calls:
                         queries.append(next(iter(tc["args"].values()), ""))
