@@ -17,7 +17,7 @@ from litellm import completion
 import chromadb
 
 def main():
-    # Carga del dataset (validación) y muestra de 50 preguntas
+    # Carga del dataset (validación) y muestra de 150 preguntas
     muestra = load_dataset("nlp-udesa/hotpot_qa_3k", split="validation").shuffle(seed=42).select(range(150))
 
     # Carga del modelo jinaai para los embeddings igual que en la bd
