@@ -30,7 +30,7 @@ packages = ["src/hotpot_qa"]
 [project.scripts]
 bd_vectorial = "bd_vectorial:main"
 baseline     = "baseline_llm_sin_bd:main"
-metricas     = "baseline_metricas:main"
 rag          = "answer_rag:main"
-rag_metricas = "rag_metricas:main"
 agente       = "answer_agente:main"
+agente_wiki  = "answer_agente_wiki:main"
+metricas     = "metricas:main"

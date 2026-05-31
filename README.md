@@ -7,48 +7,47 @@ Autor: Pablo Díaz (`pmdiaz@gmail.com`).
 
 ## Resumen
 
-El objetivo del trabajo es replicar y comparar distintas técnicas para resolver la tarea de **Multi-hop Question Answering** sobre el dataset [HotpotQA](https://huggingface.co/datasets/nlp-udesa/hotpot_qa_3k) (subset curado por la cátedra). Se implementan y evalúan tres enfoques sobre el mismo subconjunto:
+El objetivo es replicar y comparar distintas técnicas para resolver la tarea de **Multi-hop Question Answering** sobre el dataset [HotpotQA](https://huggingface.co/datasets/nlp-udesa/hotpot_qa_3k) (subset curado por la cátedra). Se implementan y evalúan cuatro enfoques sobre el mismo subconjunto de 150 preguntas:
 
-1. **Baseline closed-book**: un LLM responde sin contexto externo.
-2. **RAG**: el LLM responde con los `top-k` contextos recuperados desde una base vectorial.
-3. **Agente ReAct**: un agente con ciclo *Thought → Action → Observation* que interactúa con la base vectorial.
+1. **Baseline closed-book**: el LLM responde sin contexto externo.
+2. **RAG**: el LLM responde con los `top-k` contextos recuperados desde una base vectorial (ChromaDB).
+3. **Agente ReAct + ChromaDB**: agente con ciclo *Thought → Action → Observation* que consulta la base vectorial.
+4. **Agente ReAct + Wikipedia**: misma arquitectura de agente, pero con acceso a Wikipedia en tiempo real.
 
-Los resultados se reportan en términos de **Exact Match (EM)** y **F1** con la normalización oficial de HotpotQA, y se comparan con los baselines del paper original ([Yang et al., 2018](https://arxiv.org/abs/1809.09600)) y con los resultados de [ReAct](https://arxiv.org/abs/2210.03629).
+Los resultados se reportan en términos de **Exact Match (EM)** y **F1** con la normalización oficial de HotpotQA, con breakdown por `type` (bridge / comparison) y `level` (easy / medium / hard).
 
 ## Decisiones de diseño
 
 | Item | Decisión |
 |---|---|
-| Dataset | [`nlp-udesa/hotpot_qa_3k`](https://huggingface.co/datasets/nlp-udesa/hotpot_qa_3k) (subset curado por la cátedra) |
-| LLM | `gemini/gemini-3.1-flash-lite` vía **LiteLLM** |
-| Embeddings | `all-MiniLM-L6-v2` (default de ChromaDB) |
+| Dataset | [`nlp-udesa/hotpot_qa_3k`](https://huggingface.co/datasets/nlp-udesa/hotpot_qa_3k) |
+| LLM | `gemini-2.5-flash-lite` vía **LiteLLM** (baseline / RAG) y **LangChain** (agentes) |
+| Embeddings | `jinaai/jina-embeddings-v5-text-nano` vía `transformers` |
 | Vector store | **ChromaDB** persistente en `./chroma_db` |
-| Tool del agente | **Base de datos vectorial** (no Wikipedia) |
-| Subset de evaluación | **500 preguntas** del split `validation`, estratificadas por `type` y `level`, semilla fija |
-| Gestor de paquetes | **uv** |
+| Subset de evaluación | **150 preguntas** del split `validation`, `seed=42` |
+| Gestor de paquetes | **uv** (`pyproject.toml` + `uv.lock`) |
 
 ## Estructura del proyecto
 
 ```
 tp-multihop-qa/
 ├── README.md
-├── pyproject.toml             # Dependencias y entry points (uv)
+├── pyproject.toml               # Dependencias y entry points (uv)
 ├── uv.lock
 ├── .gitignore
 ├── src/
-│   ├── bd_vectorial.py        # Construye la base vectorial       →  uv run bd_vectorial
-│   ├── baseline_llm_sin_bd.py # LLM sin RAG (baseline)           →  uv run baseline
-│   ├── baseline_metricas.py   # EM / F1 del baseline             →  uv run metricas
-│   ├── answer_rag.py          # Pipeline RAG                     →  uv run rag
-│   ├── rag_metricas.py        # EM / F1 del RAG                  →  uv run rag_metricas
-│   └── hotpot_qa/             # Paquete de soporte
-│       ├── config.py          # Constantes globales
-│       └── data_utils.py      # Carga y subset estratificado
-├── notebooks/                 # Análisis exploratorios
-├── data/                      # Caché del dataset (gitignored)
-├── chroma_db/                 # Base de datos ChromaDB (gitignored)
-├── results/                   # Predicciones y métricas (gitignored)
-└── report/                    # Informe final
+│   ├── bd_vectorial.py          # Fase 2: construye ChromaDB          →  uv run bd_vectorial
+│   ├── baseline_llm_sin_bd.py   # Fase 3: LLM sin contexto            →  uv run baseline
+│   ├── answer_rag.py            # Fase 4: pipeline RAG                →  uv run rag
+│   ├── answer_agente.py         # Fase 5a: agente ReAct + ChromaDB    →  uv run agente
+│   ├── answer_agente_wiki.py    # Fase 5b: agente ReAct + Wikipedia   →  uv run agente_wiki
+│   ├── metricas.py              # Fase 6: EM / F1 con breakdown       →  uv run metricas <archivo>
+│   └── hotpot_qa/               # Paquete de soporte
+│       ├── config.py            # Constantes globales
+│       └── data_utils.py        # Carga y subset estratificado
+├── notebooks/                   # Análisis exploratorios
+├── chroma_db/                   # Base de datos ChromaDB (gitignored)
+└── report/                      # Informe final
 ```
 
 ## Setup
@@ -65,9 +64,9 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 uv sync
 ```
 
-### 3. Configurar la API key del LLM
+### 3. Configurar la API key de Gemini
 
-El proyecto usa Gemini a través de LiteLLM. Obtené tu clave en [Google AI Studio](https://ai.google.dev/gemini-api/docs/api-key):
+Obtené tu clave en [Google AI Studio](https://aistudio.google.com/api-keys):
 
 ```bash
 export GEMINI_API_KEY="tu_api_key"
@@ -79,101 +78,76 @@ export GEMINI_API_KEY="tu_api_key"
 uv run bd_vectorial
 ```
 
-Descarga `nlp-udesa/hotpot_qa_3k`, extrae todos los párrafos únicos y los indexa en ChromaDB (`./chroma_db`). Solo hace falta correrlo una vez.
+Descarga `nlp-udesa/hotpot_qa_3k`, extrae todos los párrafos únicos, genera embeddings con `jina-embeddings-v5-text-nano` y los indexa en ChromaDB (`./chroma_db`). Solo hace falta correrlo una vez.
 
-### 5. Correr los sistemas y calcular métricas
+## Correr los sistemas
+
+Los cuatro sistemas deben correrse sobre el mismo subset (150 preguntas, `seed=42`). Correrlos secuencialmente para no superar el límite de 15 RPM de Gemini.
 
 ```bash
-# Baseline: LLM sin contexto externo
-uv run baseline        # genera resultados_baseline.json
-uv run metricas        # calcula EM y F1 sobre resultados_baseline.json
+# Fase 3 — Baseline: LLM sin contexto externo
+uv run baseline
+# genera: resultados_baseline.json
 
-# RAG: recupera top-k párrafos antes de responder
-uv run rag             # genera resultados_rag.json
-uv run rag_metricas    # calcula EM y F1 sobre resultados_rag.json
+# Fase 4 — RAG: recupera top-5 párrafos desde ChromaDB antes de responder
+uv run rag
+# genera: resultados_rag.json
+
+# Fase 5a — Agente ReAct con ChromaDB como herramienta
+uv run agente
+# genera: resultados_agente_db.json
+
+# Fase 5b — Agente ReAct con Wikipedia como herramienta
+uv run agente_wiki
+# genera: resultados_agente_wiki.json
 ```
 
-## Plan de trabajo
+Todos los scripts tienen **checkpoint automático**: si se interrumpen, al volver a correr retoman desde la última pregunta guardada.
 
-> Hoja de ruta detallada elaborada con el cronograma 22 mayo → 10 junio 2026.
+## Calcular métricas
 
-### Fase 0 — Lectura crítica de papers (1–2 días)
+```bash
+uv run metricas resultados_baseline.json
+uv run metricas resultados_rag.json
+uv run metricas resultados_agente_db.json
+uv run metricas resultados_agente_wiki.json
+```
 
-Antes de tocar código, internalizar tres cosas de los papers de referencia:
+El script calcula EM y F1 con la normalización oficial de HotpotQA (minúsculas, sin puntuación, sin artículos a/an/the) y muestra breakdown por tipo y nivel. Para los archivos de agentes, también muestra estadísticas de uso de herramientas (promedio de llamadas por pregunta).
 
-- **HotpotQA** (Yang et al. 2018): estructura del dataset (preguntas *bridge* vs *comparison*, niveles *easy/medium/hard*), settings *distractor* vs *fullwiki*, y baselines reportados (BiDAF y variantes) que se usarán como referencia.
-- **ReAct** (Yao et al. 2022): ciclo `Thought → Action → Observation`, definición de las acciones (`Search`, `Lookup`, `Finish`) y resultados publicados sobre HotpotQA.
-- **Phi-3 / Gemma**: capacidades, tamaño y limitaciones de los LLMs candidatos, para justificar la elección en la metodología.
+Ejemplo de salida:
 
-### Fase 1 — Setup del entorno y exploración del dataset
+```
+Total preguntas: 150
+EM: 23.33%   F1: 35.81%
 
-Cargar [`nlp-udesa/hotpot_qa_3k`](https://huggingface.co/datasets/nlp-udesa/hotpot_qa_3k) con la librería `datasets`. Inspeccionar los campos `question`, `answer`, `context`, `supporting_facts`, `type`, `level`. Construir un **subset reproducible de 500 preguntas** del split `validation`, estratificado por `type` y `level` con semilla fija. Persistir el subset como JSON para reutilizarlo en todas las fases.
+Por tipo:
+  bridge       (102)   EM: 21.57%   F1: 33.40%
+  comparison    (48)   EM: 27.08%   F1: 40.62%
 
-### Fase 2 — Construcción de la base vectorial (`uv run bd_vectorial`)
+Por nivel:
+  easy          (55)   EM: 30.91%   F1: 44.20%
+  medium        (72)   EM: 19.44%   F1: 30.15%
+  hard          (23)   EM: 13.04%   F1: 22.60%
 
-Extraer todos los contextos únicos (título + oraciones) de todas las particiones del dataset e indexar en **ChromaDB** (`./chroma_db`). ChromaDB genera los embeddings automáticamente con `all-MiniLM-L6-v2`. Decisiones que documentar en el informe:
-
-- **Granularidad**: artículo completo (título + todas las oraciones concatenadas).
-- **Tamaño del corpus**: cantidad de pasajes únicos resultantes.
-- **Validación cualitativa**: verificar con queries de prueba que el retrieval recupera los párrafos esperados.
-
-### Fase 3 — Baseline closed-book (`uv run baseline`)
-
-El LLM recibe **sólo la pregunta**, sin contexto externo. Sirve como piso del experimento para medir cuánto aporta el retrieval. Las respuestas se guardan en `resultados_baseline.json`. Métricas con `uv run metricas`.
-
-### Fase 4 — Sistema RAG (`uv run rag`)
-
-Pipeline canónico: pregunta → recuperar `top-k` desde ChromaDB → armar prompt con contextos → generar respuesta vía LiteLLM. El valor de `TOP_K` se ajusta directamente en `src/answer_rag.py`. Las respuestas se guardan en `resultados_rag.json`. Métricas con `uv run rag_metricas`.
-
-### Fase 5 — Agente ReAct
-
-Agente con ciclo `Thought → Action → Observation`. Herramientas mínimas:
-
-- `search(query)` → top-k desde ChromaDB.
-- `finish(answer)` → termina la ejecución.
-
-Parámetros: `max_steps = 5–7`, prompt few-shot con ejemplos al estilo ReAct, captura del *reasoning trace* para análisis cualitativo posterior.
-
-### Fase 6 — Evaluación con métricas oficiales
-
-Implementación de **Exact Match** y **F1** con la normalización del paper de HotpotQA (lower, sin artículos `a/an/the`, sin puntuación, sin espacios extra). Corrida de los tres sistemas sobre el **mismo subset** de 500 preguntas. Persistencia en CSV con columnas `(qid, question, gold, pred_baseline, pred_rag, pred_agent, em_*, f1_*, type, level)`.
-
-### Fase 7 — Análisis de resultados y comparación con el paper
-
-- Tabla comparativa con EM/F1 de los tres enfoques + cifras del paper de HotpotQA (BiDAF) y de ReAct.
-- Breakdown por `type` (bridge vs comparison) y `level` (easy/medium/hard).
-- Análisis de errores: 5–10 casos donde RAG falla pero el agente acierta, y al revés.
-- Costo computacional: cantidad promedio de llamadas al LLM por pregunta.
-
-### Fase 8 — Redacción del informe (3–5 páginas)
-
-Secciones: **Introducción** (½ pág) · **Metodología** (~1½ pág) · **Resultados** (~2 pág) · **Conclusiones** (½ pág). Formato Markdown o PDF. Referencias a los tres papers.
-
-### Fase 9 — Verificación final y entrega
-
-Revisión de reproducibilidad (semillas, `pyproject.toml`, instrucciones de uso), validación de que las métricas del informe coincidan con los outputs del código, empaquetado y subida al campus virtual antes del **miércoles 10 de junio de 2026, 23:59 hs**.
-
-## Cronograma
-
-| Fechas | Fase | Entregable parcial |
-|---|---|---|
-| 22–25 may | Fase 0–1 | Subset de 500 preguntas persistido |
-| 26–28 may | Fase 2 | Base vectorial ChromaDB construida y validada |
-| 29–30 may | Fase 3 | Predicciones baseline + métricas |
-| 31 may – 2 jun | Fase 4 | Predicciones RAG con barrido de k |
-| 3–5 jun | Fase 5 | Predicciones del agente + traces |
-| 6–7 jun | Fase 6–7 | CSV consolidado + análisis |
-| 8–9 jun | Fase 8 | Informe en draft |
-| 10 jun | Fase 9 | Entrega final |
+Uso de herramientas (150 preguntas con traza):
+  Promedio llamadas/pregunta: 1.84
+  Sin llamadas (0):           12 (8.0%)
+  1 llamada:    67 preguntas (44.7%)
+  2 llamadas:   55 preguntas (36.7%)
+  3 llamadas:   16 preguntas (10.7%)
+```
 
 ## Dependencias principales
 
 | Librería | Rol |
 |---|---|
-| `chromadb` | Base de datos vectorial (embeddings automáticos con `all-MiniLM-L6-v2`) |
-| `litellm` | Interfaz unificada para LLMs (Gemini, OpenAI, Anthropic, etc.) |
+| `chromadb` | Base de datos vectorial |
+| `transformers` | Modelo de embeddings Jina |
+| `litellm` | Interfaz unificada para LLMs (baseline y RAG) |
+| `langchain` / `langgraph` | Framework para agentes ReAct |
 | `datasets` | Carga de `nlp-udesa/hotpot_qa_3k` |
-| `langchain` | Utilidades de cadenas y agentes |
+| `wikipedia` | Acceso a Wikipedia en tiempo real (agente_wiki) |
 
 Gestionadas con **uv** (`pyproject.toml` + `uv.lock`). No se usa `requirements.txt`.
 

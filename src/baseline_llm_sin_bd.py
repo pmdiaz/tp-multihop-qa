@@ -40,7 +40,9 @@ def main():
                 "id": fila['id'],
                 "pregunta": fila['question'],
                 "respuesta_real": fila['answer'],
-                "respuesta_modelo": response.choices[0].message.content.strip()
+                "respuesta_modelo": response.choices[0].message.content.strip(),
+                "type": fila['type'],
+                "level": fila['level']
             })
 
             time.sleep(4.5) # esperar 4.5 segundos para no superar el límite de 15 requests per minute

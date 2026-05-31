@@ -63,7 +63,6 @@ def main():
         batch_docs = corpus[i:i + batch_size]
         batch_ids = ids[i:i + batch_size]
 
-
         embeddings = model.encode(batch_docs, task="retrieval")
 
         collection.add(
