@@ -18,7 +18,7 @@ from transformers import AutoModel
 from tqdm import tqdm
 
 def main():
-    # Mismo modelo de embeddings que usa bd_vectorial.py para la ingesta
+    # mismo modelo de embeddings que usa bd_vectorial.py, jina ai
     model_name = "jinaai/jina-embeddings-v5-text-nano"
     device = "cpu"
     if torch.cuda.is_available():
@@ -45,7 +45,7 @@ def main():
     resultados_rag = []
     with tqdm(total=len(muestra), desc="Procesando preguntas") as pbar:
         for fila in muestra:
-            # Encodear la pregunta con Jina (mismo espacio vectorial que la ingesta)
+            # Encodear la pregunta con jina ai
             q_embedding = model.encode([fila['question']], task="retrieval")
 
             # Recuperar los k párrafos más relevantes para la pregunta
