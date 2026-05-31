@@ -1,4 +1,4 @@
-# Responde preguntas usando un agente ReAct con Wikipedia como fuente de conocimiento.
+# Responde preguntas usando un agente ReAct con Wikipedia como fuente de información.
 # Busca artículos en Wikipedia en tiempo real para responder cada pregunta.
 # Se guardan las respuestas en un JSON para calcular métricas luego.
 
@@ -48,7 +48,7 @@ def main():
         "3. Si la respuesta requiere información de más de una entidad (pregunta de múltiples pasos), "
         "repetí el paso 2 con una query distinta para cada entidad antes de responder.\n"
         "4. Una vez que tenés toda la información necesaria, respondé con la respuesta EXACTA y CONCISA: "
-        "solo el dato pedido, sin oraciones explicativas ni puntuación extra."
+        "solo el dato pedido, sin oraciones adicionales, explicaciones no solicitadas ni puntuación extra."
     )
 
     agente = create_react_agent(llm, tools)
