@@ -66,14 +66,14 @@ def main():
     tools = [buscar_en_db]
 
     system_prompt = (
-        "Sos un asistente de QA que responde preguntas con razonamiento multi-paso usando una base de datos vectorial.\n\n"
+        "Sos un asistente de QA que responde preguntas con razonamiento multi-hop usando una base de datos vectorial.\n\n"
         "FLUJO OBLIGATORIO para cada pregunta:\n"
         "1. Identificá las entidades y conceptos clave en la pregunta.\n"
         "2. Usá `buscar_en_db` con una query enfocada en la primera entidad o sub-pregunta.\n"
         "3. Si la respuesta requiere información de más de una entidad (pregunta de múltiples pasos), "
         "repetí el paso 2 con una query distinta para cada entidad o sub-pregunta antes de responder.\n"
         "4. Una vez que tenés toda la información necesaria, respondé con la respuesta EXACTA y CONCISA: "
-        "solo el dato pedido, sin oraciones explicativas ni puntuación extra."
+        "solo el dato pedido, sin oraciones adicionales, explicaciones no solicitadas ni puntuación extra."
     )
 
     # creación del agente
