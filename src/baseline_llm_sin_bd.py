@@ -19,7 +19,7 @@ from litellm import completion
 from tqdm import tqdm
 
 def main():
-    # carga del dataset reducido (validación) y muestra de 50 preguntas para el baseline (se pueden tomar mas pero a veces se supera la cuota)
+    # carga del dataset reducido (validación) y muestra de 150 preguntas para el baseline
     muestra = load_dataset("nlp-udesa/hotpot_qa_3k", split="validation").shuffle(seed=42).select(range(150))
 
     resultados_baseline = []
