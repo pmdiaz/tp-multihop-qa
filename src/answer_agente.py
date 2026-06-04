@@ -79,11 +79,9 @@ def main():
     # creación del agente
     agente = create_react_agent(llm, tools)
 
-    # carga del dataset (validación) y muestra de 150 preguntas
-    muestra = load_dataset("nlp-udesa/hotpot_qa_3k", split="validation").shuffle(seed=42).select(range(150))
+    muestra = load_dataset("nlp-udesa/hotpot_qa_3k", split="validation").shuffle(seed=42).select(range(500))
 
-    # retomar desde donde se cortó si ya existe el archivo
-    output_file = "resultados_agente_db.json"
+    output_file = "resultados_agente_db_500.json"
     if os.path.exists(output_file):
         with open(output_file, "r", encoding="utf-8") as f:
             resultados_agente_db = json.load(f)
@@ -133,7 +131,7 @@ def main():
             with open(output_file, "w", encoding="utf-8") as f:
                 json.dump(resultados_agente_db, f, indent=4, ensure_ascii=False)
 
-            time.sleep(4.5)  # esperar para no superar el límite de 15 requests per minute
+            time.sleep(4.5)
             pbar.update(1)
 
     print(f"Listo. Respuestas guardadas en {output_file}")

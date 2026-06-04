@@ -21,6 +21,7 @@ from tqdm import tqdm
 def main():
     wikipedia.set_lang("en")
     wikipedia.set_user_agent("User-Agent: InfinitumBotty/0.1 (https://github.com/ctx77/InfinitumBotty) python-via-wikipedia-module/1.4.0")
+
     @tool
     def buscar_en_wikipedia(query: str) -> str:
         """Busca en Wikipedia y devuelve el contenido del artículo más relevante. Llamá esta herramienta una vez por entidad o sub-pregunta."""
@@ -37,7 +38,7 @@ def main():
         except Exception:
             return "No se encontró información."
 
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite", temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-3.1-flash-lite", temperature=0)
     tools = [buscar_en_wikipedia]
 
     system_prompt = (
@@ -53,9 +54,9 @@ def main():
 
     agente = create_react_agent(llm, tools)
 
-    muestra = load_dataset("nlp-udesa/hotpot_qa_3k", split="validation").shuffle(seed=42).select(range(150))
+    muestra = load_dataset("nlp-udesa/hotpot_qa_3k", split="validation").shuffle(seed=42).select(range(500))
 
-    output_file = "resultados_agente_wiki.json"
+    output_file = "resultados_agente_wiki_500.json"
     if os.path.exists(output_file):
         with open(output_file, "r", encoding="utf-8") as f:
             resultados = json.load(f)
