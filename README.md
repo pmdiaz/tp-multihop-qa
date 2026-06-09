@@ -7,14 +7,14 @@ Autores: Pablo Díaz (`pmdiaz@gmail.com`), Ezequiel Martinez (`martineze85@gmail
 
 ## Resumen
 
-El objetivo es replicar y comparar distintas técnicas para resolver la tarea de **Multi-hop Question Answering** sobre el dataset [HotpotQA](https://huggingface.co/datasets/nlp-udesa/hotpot_qa_3k) (subset curado y provisto por la cátedra). Se implementan y evalúan cuatro enfoques sobre el mismo subconjunto de 150 preguntas:
+El objetivo es replicar y comparar distintas técnicas para resolver la tarea de **Multi-hop Question Answering** sobre el dataset [HotpotQA](https://huggingface.co/datasets/nlp-udesa/hotpot_qa_3k) (subset curado y provisto por la cátedra). Se implementan y evalúan cuatro enfoques sobre el mismo subconjunto de 500 preguntas:
 
 1. **Baseline closed-book**: el LLM responde sin contexto externo.
 2. **RAG**: el LLM responde con los `top-k` contextos recuperados desde una base vectorial (ChromaDB).
 3. **Agente ReAct + ChromaDB**: agente que realiza los procesos *Thought → Action → Observation*, en ciclos, que consulta la base vectorial.
 4. **Agente ReAct + Wikipedia**: misma arquitectura de agente, pero con acceso a Wikipedia en tiempo real.
 
-Los resultados se reportan en términos de **Exact Match (EM)** y **F1** con la normalización oficial de HotpotQA, con desglose (breakdown) por tipo (`type`: bridge / comparison) y  nivel (`level`: easy / medium / hard).
+Los resultados se reportan en términos de **Exact Match (EM)** y **F1** con la normalización oficial de HotpotQA, con desglose por tipo (`type`: bridge / comparison).
 
 ## Decisiones de diseño
 
@@ -24,7 +24,7 @@ Los resultados se reportan en términos de **Exact Match (EM)** y **F1** con la 
 | LLM | `gemini-2.5-flash-lite` vía **LiteLLM** (baseline / RAG) y **LangChain** (agentes) |
 | Embeddings | `jinaai/jina-embeddings-v5-text-nano` vía `transformers` |
 | Vector store | **ChromaDB** persistente en `./chroma_db` |
-| Subset de evaluación | **150 preguntas** del split `validation`, `seed=42` |
+| Subset de evaluación | **500 preguntas** del split `validation`, `seed=42` |
 | Gestor de paquetes | **uv** (`pyproject.toml` + `uv.lock`) |
 
 ## Estructura del proyecto
@@ -81,7 +81,7 @@ Descarga `nlp-udesa/hotpot_qa_3k`, extrae todos los párrafos únicos, genera em
 
 ## Correr los distintos enfoques/modelos
 
-Los cuatro enfoques/modelos deben correrse sobre el mismo subset (150 preguntas, `seed=42`). Correrlos secuencialmente para no superar el límite de 15 RPM de Gemini.
+Los cuatro enfoques/modelos deben correrse sobre el mismo subset (500 preguntas, `seed=42`). Correrlos secuencialmente para no superar el límite de 15 RPM de Gemini.
 
 ```bash
 # Fase 3 — Baseline: LLM sin contexto externo
@@ -112,7 +112,7 @@ uv run metricas resultados_agente_db.json
 uv run metricas resultados_agente_wiki.json
 ```
 
-El script calcula EM y F1 con la normalización oficial de HotpotQA (minúsculas, sin puntuación, sin artículos a/an/the) y muestra desglose por tipo y nivel. Para los archivos de agentes, también muestra estadísticas de uso de herramientas (promedio de llamadas por pregunta).
+El script calcula EM y F1 con la normalización oficial de HotpotQA (minúsculas, sin puntuación, sin artículos a/an/the) y muestra desglose por tipo. Para los archivos de agentes, también muestra estadísticas de uso de herramientas (promedio de llamadas por pregunta).
 
 Ejemplo de salida:
 
@@ -124,12 +124,7 @@ Por tipo:
   bridge       (102)   EM: 21.57%   F1: 33.40%
   comparison    (48)   EM: 27.08%   F1: 40.62%
 
-Por nivel:
-  easy          (55)   EM: 30.91%   F1: 44.20%
-  medium        (72)   EM: 19.44%   F1: 30.15%
-  hard          (23)   EM: 13.04%   F1: 22.60%
-
-Uso de herramientas (150 preguntas con traza):
+Uso de herramientas (500 preguntas con traza):
   Promedio llamadas/pregunta: 1.84
   Sin llamadas (0):           12 (8.0%)
   1 llamada:    67 preguntas (44.7%)
@@ -142,7 +137,7 @@ Uso de herramientas (150 preguntas con traza):
 | Librería | Rol |
 |---|---|
 | `chromadb` | Base de datos vectorial |
-| `transformers` | Modelo de embeddings Jina |
+| `transformers` | Modelo de embeddings Jina AI|
 | `litellm` | Interfaz unificada para LLMs (baseline y RAG) |
 | `langchain` / `langgraph` | Framework para agentes ReAct |
 | `datasets` | Carga de `nlp-udesa/hotpot_qa_3k` |
@@ -154,4 +149,3 @@ Gestionadas con **uv** (`pyproject.toml` + `uv.lock`). No se usa `requirements.t
 
 - Yang, Z. et al. (2018). *HotpotQA: A Dataset for Diverse, Explainable Multi-hop Question Answering*. arXiv:1809.09600.
 - Yao, S. et al. (2022). *ReAct: Synergizing Reasoning and Acting in Language Models*. arXiv:2210.03629.
-- Abdin, M. et al. (2024). *Phi-3 Technical Report: A Highly Capable Language Model Locally on Your Phone*. arXiv:2404.14219.
