@@ -1,12 +1,3 @@
-# Responde preguntas usando un agente ReAct con Wikipedia como fuente de información.
-# Busca artículos en Wikipedia en tiempo real para responder cada pregunta.
-# Se guardan las respuestas en un JSON para calcular métricas luego.
-
-# Para usar Gemini:
-# 1 Entrar a https://aistudio.google.com/api-keys
-# 2 Create "API key" y copiar.
-# 3 En Terminal: export GEMINI_API_KEY="api_key_aca"
-
 import json
 import os
 import time
@@ -36,7 +27,7 @@ def main():
                 pagina = wikipedia.page(e.options[0], auto_suggest=False)
                 return pagina.summary[:2000]
         except Exception:
-            return "No se encontró información."
+            return "No se encontro informacion."
 
     llm = ChatGoogleGenerativeAI(model="gemini-3.1-flash-lite", temperature=0)
     tools = [buscar_en_wikipedia]
@@ -61,12 +52,12 @@ def main():
         with open(output_file, "r", encoding="utf-8") as f:
             resultados = json.load(f)
         ya_procesados = {r["id"] for r in resultados}
-        print(f"Retomando: {len(ya_procesados)}/{len(muestra)} preguntas ya procesadas")
+        print(f"Retomando: {len(ya_procesados)} preguntas ya procesadas")
     else:
         resultados = []
         ya_procesados = set()
 
-    print("Iniciando evaluación del Agente con Wikipedia...")
+    print("Iniciando Agente con Wikipedia...")
     with tqdm(total=len(muestra), desc="Procesando preguntas", initial=len(ya_procesados)) as pbar:
         for fila in muestra:
             if fila['id'] in ya_procesados:
@@ -108,7 +99,7 @@ def main():
             time.sleep(4.5)
             pbar.update(1)
 
-    print(f"Listo. Respuestas guardadas en {output_file}")
+    print(f"Respuestas guardadas en {output_file}")
 
 
 if __name__ == "__main__":

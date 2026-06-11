@@ -1,12 +1,3 @@
-# Responde preguntas usando un agente. Recupera los top-k párrafos más relevantes de la base
-# vectorial construida en bd_vectorial.py y los usa como contexto para el LLM.
-# Se guardan las respuestas en un JSON para calcular métricas luego.
-
-# Para usar Gemini:
-# 1 Entrar a https://aistudio.google.com/api-keys
-# 2 Create "API key" y copiar.
-# 3 En Terminal: export GEMINI_API_KEY="api_key_aca"
-
 import json
 import os
 import time
@@ -91,7 +82,7 @@ def main():
         resultados_agente_db = []
         ya_procesados = set()
 
-    print("Iniciando evaluación del Agente con bd..")
+    print("Iniciando Agente con bd..")
     with tqdm(total=len(muestra), desc="Procesando preguntas", initial=len(ya_procesados)) as pbar:
         for fila in muestra:
             if fila['id'] in ya_procesados:
@@ -134,7 +125,7 @@ def main():
             time.sleep(4.5)
             pbar.update(1)
 
-    print(f"Listo. Respuestas guardadas en {output_file}")
+    print(f"Respuestas guardadas en {output_file}")
 
 
 if __name__ == "__main__":

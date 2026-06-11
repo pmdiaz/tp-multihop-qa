@@ -68,7 +68,7 @@ def main():
             e, f, c = calcular_metricas(por_tipo[tipo])
             print(f"  {tipo:<12} ({c:>3})   EM: {e:.2f}%   F1: {f:.2f}%")
 
-    # Breakdown por nivel (easy / medium / hard)
+    #Desgloze por nivel (easy / medium / hard)
     tiene_level = "level" in resultados[0] if resultados else False
     if tiene_level:
         por_nivel = defaultdict(list)
@@ -81,7 +81,7 @@ def main():
                 e, f, c = calcular_metricas(por_nivel[nivel])
                 print(f"  {nivel:<8} ({c:>3})   EM: {e:.2f}%   F1: {f:.2f}%")
 
-    # Análisis de uso de tools (solo si hay campo traza)
+    #Uso de tools
     tiene_traza = False
     for i in resultados:
         if "traza" in i:

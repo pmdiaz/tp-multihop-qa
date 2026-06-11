@@ -1,13 +1,3 @@
-# Responde preguntas usando RAG (Retrieval-Augmented Generation).
-# Recupera los top-k párrafos más relevantes de la base vectorial
-# construida en bd_vectorial.py y los usa como contexto para el LLM.
-# Se guardan las respuestas en un JSON para calcular métricas luego.
-
-# Para usar Gemini:
-# 1 Entrar a https://aistudio.google.com/api-keys
-# 2 Create "API key" y copiar.
-# 3 En Terminal: export GEMINI_API_KEY="api_key_aca"
-
 import json
 import time
 from datasets import load_dataset
@@ -92,7 +82,7 @@ def main():
     with open("resultados_rag.json", "w", encoding="utf-8") as f:
         json.dump(resultados_rag, f, indent=4, ensure_ascii=False)
 
-    print("Listo. Respuestas guardadas en resultados_rag.json")
+    print("Respuestas guardadas en resultados_rag.json")
 
 
 if __name__ == "__main__":

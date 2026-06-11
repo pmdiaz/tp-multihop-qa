@@ -42,9 +42,6 @@ tp-multihop-qa/
 │   ├── answer_agente.py         # agente ReAct + ChromaDB    →  uv run agente
 │   ├── answer_agente_wiki.py    # agente ReAct + Wikipedia   →  uv run agente_wiki
 │   ├── metricas.py              # EM / F1 con desglose       →  uv run metricas <archivo>
-│   └── hotpot_qa/               # Paquete de soporte
-│       ├── config.py            # Constantes globales (de ser necesarios)
-│       └── data_utils.py        # Carga (de ser necesarios) 
 ├── chroma_db/                   # Base de datos ChromaDB (gitignored)
 
 ```

@@ -1,17 +1,3 @@
-# pregunta al LLM sin usar la base de datos vectorial.
-# se guardan las respuestas a las preguntas en un JSON.
-
-# Para usar Gemma o LLMs de HF:
-# 1 Entrar a huggingface.co/settings/tokens.
-# 2 Clic en "Create new token".
-# 3 Tipo de token, "Read" (lectura). Nombre, crear y copiar.
-# 4 En terminal: export HUGGINGFACE_API_KEY="token_aca"
-
-# Para usar Gemini:
-# 1 Entrar a https://aistudio.google.com/api-keys
-# 2 Create "API key" y copiar.
-# 3 En Terminal: export GEMINI_API_KEY="api_key_aca"
-
 import json
 import time
 from datasets import load_dataset
@@ -51,7 +37,7 @@ def main():
     with open("resultados_baseline.json", "w", encoding="utf-8") as f:
         json.dump(resultados_baseline, f, indent=4, ensure_ascii=False)
 
-    print("Listo. Respuestas guardadas en resultados_baseline.json")
+    print("Respuestas guardadas en resultados_baseline.json")
 
 
 if __name__ == "__main__":
